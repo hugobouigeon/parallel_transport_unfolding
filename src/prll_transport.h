@@ -5,5 +5,5 @@ using namespace Eigen;
 #include <igl/octree.h>
 #include <igl/knn.h>
 
-Eigen::MatrixXd compute_Rij(const MatrixXd& T1, Eigen::MatrixXi& T2);
+Eigen::MatrixXd compute_Rij(const MatrixXd& Ti, Eigen::MatrixXd& Tj);
 Eigen::MatrixXd compute_D(const MatrixXd& V1, const Eigen::MatrixXi& I, MatrixXd& normals);
