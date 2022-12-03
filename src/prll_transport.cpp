@@ -1,12 +1,15 @@
 #include "prll_transport.h"
 
 
-Eigen::MatrixXd compute_Rij(const MatrixXd& T1, Eigen::MatrixXi& T2) {
+Eigen::MatrixXd compute_Rij(const MatrixXd& Ti, Eigen::MatrixXd& Tj) {
 	// compute Rij using SVD
-	// complete here
-	//MatrixXi out(V1.rows(), k);
-	MatrixXd R;
-	return R;
+	// cf. eq (3) p.6 of PTU paper
+	JacobiSVD<MatrixXd> svd(Tj.transpose() * Ti, Eigen::ComputeFullU | Eigen::ComputeFullV);
+
+	MatrixXd U = svd.matrixU();
+	MatrixXd V = svd.matrixV();
+
+	return U * V.transpose();
 }
 
 //TODO dico de Rij?
