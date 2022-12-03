@@ -18,35 +18,35 @@ void k_nearest_neighbour(const MatrixXd& V1, Eigen::MatrixXi& I, int k) {
 	}
 }
 
-void compute_normals(const MatrixXd &V1,const Eigen::MatrixXi &I, int k, MatrixXd &normals){
-    // compute the normals using PCA
-	MatrixXd out(V1.rows(), 3);
+// void compute_normals(const MatrixXd &V1,const Eigen::MatrixXi &I, int k, MatrixXd &normals){
+//     // compute the normals using PCA
+// 	MatrixXd out(V1.rows(), 3);
 
-    int n = V1.rows();
+//     int n = V1.rows();
 	
-	for (int i = 0; i < n; i++) {
+// 	for (int i = 0; i < n; i++) {
 
-		MatrixXd C(3, 3);
-		C(0, 0) = 0;	C(0, 1) = 0;	C(0, 2) = 0;
-		C(1, 0) = 0;	C(1, 1) = 0;	C(1, 2) = 0;
-		C(2, 0) = 0;	C(2, 1) = 0;	C(2, 2) = 0;
+// 		MatrixXd C(3, 3);
+// 		C(0, 0) = 0;	C(0, 1) = 0;	C(0, 2) = 0;
+// 		C(1, 0) = 0;	C(1, 1) = 0;	C(1, 2) = 0;
+// 		C(2, 0) = 0;	C(2, 1) = 0;	C(2, 2) = 0;
 
-		Vector3d P = V1.row(i);
-		for (int j = 0; j < k; j++) {
-			Vector3d pj = V1.row(I(i,j));
-			if (pj != P) {
-				C += (pj - P) * (pj - P).transpose();
-			}
-		}
-		SelfAdjointEigenSolver<Matrix3d> es(C);
-		MatrixXcd eigenvectors = es.eigenvectors();
+// 		Vector3d P = V1.row(i);
+// 		for (int j = 0; j < k; j++) {
+// 			Vector3d pj = V1.row(I(i,j));
+// 			if (pj != P) {
+// 				C += (pj - P) * (pj - P).transpose();
+// 			}
+// 		}
+// 		SelfAdjointEigenSolver<Matrix3d> es(C);
+// 		MatrixXcd eigenvectors = es.eigenvectors();
 
-		out(i, 0) = eigenvectors(0, 0).real()/5;
-		out(i, 1) = eigenvectors(1, 0).real()/5;
-		out(i, 2) = eigenvectors(2, 0).real()/5;
-	}
-	normals = out;
-}
+// 		out(i, 0) = eigenvectors(0, 0).real()/5;
+// 		out(i, 1) = eigenvectors(1, 0).real()/5;
+// 		out(i, 2) = eigenvectors(2, 0).real()/5;
+// 	}
+// 	normals = out;
+// }
 
 Eigen::MatrixXd compute_tangent_space(const MatrixXd &V1, const Eigen::MatrixXi &I, int k, int d, int i) {
 	// computes an orthonormal basis for the local tangent space defined by the k closest neighbors of each point

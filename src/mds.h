@@ -6,4 +6,4 @@ using namespace Eigen;
 #include <igl/knn.h>
 
 Eigen::MatrixXd compute_gramm_matrix(const Eigen::MatrixXd& D);
-Eigen::MatrixXd compute_new_embeding(const MatrixXd& G, int d);
+Eigen::MatrixXd compute_new_embedding(const MatrixXd& G, int d);
