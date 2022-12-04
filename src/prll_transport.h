@@ -4,6 +4,7 @@ using namespace Eigen;
 #include <Eigen/Eigenvalues>
 #include <igl/octree.h>
 #include <igl/knn.h>
+#include "pca.h"
 
-Eigen::MatrixXd compute_Rij(const MatrixXd& Ti, Eigen::MatrixXd& Tj);
-Eigen::MatrixXd compute_D(const MatrixXd& V1, const Eigen::MatrixXi& I, MatrixXd& normals);
+Eigen::MatrixXd compute_Rij(const MatrixXd& Ti, const Eigen::MatrixXd& Tj);
+Eigen::MatrixXd compute_D(const MatrixXd& V, const int k);
