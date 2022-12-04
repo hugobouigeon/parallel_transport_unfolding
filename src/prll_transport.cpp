@@ -118,7 +118,7 @@ Eigen::MatrixXd compute_distance_matrix(const MatrixXd &V, int k, int d){
 	for (int i = 0; i < n; i++) {
 		Tangent_spaces[i] = compute_tangent_space(V, I, k, d, i);
 	}
-	std::cout << "Computing the distance matrix:" << std::endl;
+	std::cout << "Computing the distance matrix..." << std::endl;
 	for (int i = 0; i<n; i++) {
 		int barWidth = 70;
 		float progress = static_cast<float>(i)/static_cast<float>(V.rows());
@@ -135,8 +135,7 @@ Eigen::MatrixXd compute_distance_matrix(const MatrixXd &V, int k, int d){
 		auto geo_path = dijkstra(V, I, i, k, Dist);
 		// compute_unfolding(V, geo_path, Dist, i, d);
 	}
-	std::cout.flush();
-	std::cout << "Computing the distance matrix: Done                                           " << std::endl;
+	std::cout << std::endl;
 	// Post-processing to correct potential asymmetries
 	Dist = (Dist + Dist.transpose()) / 2;
 	return Dist;

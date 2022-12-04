@@ -3,7 +3,6 @@
 
 void k_nearest_neighbour(const MatrixXd& V, Eigen::MatrixXi& I, int k) {
 	// return the k nearest neighbour index
-	// complete here
 	int n = V.rows();
 	std::vector<std::vector<int > > O_PI;
 	Eigen::MatrixXi O_CH;
@@ -13,8 +12,6 @@ void k_nearest_neighbour(const MatrixXd& V, Eigen::MatrixXi& I, int k) {
 	Eigen::VectorXd A;
 	{
 		igl::knn(V, k, O_PI, O_CH, O_CN, O_W, I);
-		// CGAL is only used to help get point areas
-		//igl::copyleft::cgal::point_areas(V, I, N, A);
 	}
 }
 
@@ -52,7 +49,6 @@ Eigen::MatrixXd compute_tangent_space(const MatrixXd &V, Eigen::MatrixXi &I, int
 	// computes an orthonormal basis for the local tangent space defined by the k closest neighbors of each point
 	int D = V.cols(); // initial number of dimensions
 	MatrixXd N = MatrixXd::Zero(D, k);
-	// j starts at 1 to omit closest neighbor, which is the point itself
 	bool seen_self = false;
 	for (int j = 0; j < k; j++) {
 		if (I(i, j) == i) {
@@ -63,7 +59,6 @@ Eigen::MatrixXd compute_tangent_space(const MatrixXd &V, Eigen::MatrixXi &I, int
 			N.col(neighbor_idx) = (V.row(I(i,j)) - V.row(i));
 		}
 	}
-	// std::cout << "Test le" << std::endl;
 	JacobiSVD<MatrixXd> es(N, ComputeThinU | ComputeThinV);
 	// MatrixXd U = svd.matrixU();
 	MatrixXd eigenvectors = es.matrixV().real();
@@ -71,10 +66,8 @@ Eigen::MatrixXd compute_tangent_space(const MatrixXd &V, Eigen::MatrixXi &I, int
 	// SelfAdjointEigenSolver<MatrixXd> es(N);
 	// MatrixXd eigenvectors = es.eigenvectors().real();
 	MatrixXd Ti = MatrixXd::Zero(D, d);
-	// std::cout << "Test ka" << std::endl;
 	for (int j = 0; j < d; j++) {
 		Ti.col(j) = eigenvectors.row(j);
 	}
-	// std::cout << "Test rfr" << std::endl;
 	return Ti;
 }

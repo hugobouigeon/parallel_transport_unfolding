@@ -25,14 +25,21 @@ Eigen::MatrixXd compute_new_embedding(MatrixXd& G, int d) {
 
 	// float lambda = 1;
 
-	JacobiSVD<MatrixXd> es(G, ComputeThinU | ComputeThinV);
+	// JacobiSVD<MatrixXd> es(G, ComputeThinU | ComputeThinV);
+	SelfAdjointEigenSolver<MatrixXd> es(G);
+	MatrixXd eigenvectors = es.eigenvectors().real();
 
-	MatrixXd eigenvectors = es.matrixV().real();
-	MatrixXd eigenvalues = es.singularValues().real();
+	// MatrixXd eigenvectors = es.matrixV().real();
+	MatrixXcd ev = es.eigenvalues();
+	for (int i = 0; i < d; i++) {
+		std::cout << ev(i) << std::endl;
+	}
+	MatrixXd eigenvalues = ev.real();
 
 	for (int i = 0; i < d; i++) {
-		Q.col(i) = std::sqrt(eigenvalues(i)) * eigenvectors.row(i).transpose();
-		Lambda(i,i) = std::sqrt(eigenvalues(i));
+		std::cout << eigenvalues(i) << std::endl;
+		Q.col(i) = std::sqrt(abs(eigenvalues(i))) * eigenvectors.row(i).transpose();
+		Lambda(i,i) = std::sqrt(abs(eigenvalues(i)));
 	}
 
 	Z = Q;
