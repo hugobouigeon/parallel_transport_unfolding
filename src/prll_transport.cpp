@@ -40,7 +40,7 @@ std::pair<std::vector<int >, std::vector<int > > dijkstra(const MatrixXd &V, Mat
 		int v = p.second;
 		if (distances_to_src[v] >= 0) continue; // vertex already processed
 		distances_to_src[v] = p.first;
-		Dist(src, v) = p.first;
+		Dist(src, v) = p.first*p.first;
 		order.push_back(v);
 
 		// adding new outgoing edges to priority queue
