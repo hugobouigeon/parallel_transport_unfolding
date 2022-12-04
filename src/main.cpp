@@ -105,6 +105,7 @@ int main(int argc, char *argv[])
   igl::readOFF(input, V, F1);
   igl::opengl::glfw::Viewer viewer;
   set_pc(viewer);
+  Eigen::MatrixXd Dist = compute_distance_matrix(V, 12, 2);
   Eigen::MatrixXd normals(V.rows(), 3);
   // Eigen::MatrixXd A(V.rows(), 3);
   // Eigen::MatrixXd B(V.rows(), 3);

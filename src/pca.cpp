@@ -54,13 +54,20 @@ Eigen::MatrixXd compute_tangent_space(const MatrixXd &V, Eigen::MatrixXi &I, int
 	MatrixXd N = MatrixXd::Zero(D, k-1);
 	// j starts at 1 to omit closest neighbor, which is the point itself
 	for (int j = 1; j < k; j++) {
-		N.col(j-1) = (V.row(I(i,j)) - V.row(i)).transpose();
+		N.col(j-1) = (V.row(I(i,j)) - V.row(i));
 	}
-	SelfAdjointEigenSolver<Matrix3d> es(N);
-	MatrixXd eigenvectors = es.eigenvectors().real();
+	// std::cout << "Test le" << std::endl;
+	JacobiSVD<MatrixXd> es(N, ComputeThinU | ComputeThinV);
+	// MatrixXd U = svd.matrixU();
+	MatrixXd eigenvectors = es.matrixV().real();
+
+	// SelfAdjointEigenSolver<MatrixXd> es(N);
+	// MatrixXd eigenvectors = es.eigenvectors().real();
 	MatrixXd Ti = MatrixXd::Zero(D, d);
+	// std::cout << "Test ka" << std::endl;
 	for (int j = 0; j < d; j++) {
-		Ti.col(j) = eigenvectors.col(j);
+		Ti.col(j) = eigenvectors.row(j);
 	}
+	// std::cout << "Test rfr" << std::endl;
 	return Ti;
 }
