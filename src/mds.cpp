@@ -9,7 +9,7 @@ Eigen::MatrixXd compute_gramm_matrix(MatrixXd& D) {
 	MatrixXd I = MatrixXd::Identity(n, n);
 	MatrixXd Ones = MatrixXd::Ones(n, n);
 	
-	G = -0.5 * (I - Ones) * D * (I - Ones);
+	G = -0.5 * (I - Ones / n) * D * (I - Ones / n);
 	return G;
 }
 
@@ -21,8 +21,9 @@ Eigen::MatrixXd compute_new_embedding(MatrixXd& G, int d) {
 
 	MatrixXd Z(n, d);
 	MatrixXd Q(n, d);
+	MatrixXd Lambda = MatrixXd::Zero(n,n);
 
-	float lambda = 1;
+	// float lambda = 1;
 
 	JacobiSVD<MatrixXd> es(G, ComputeThinU | ComputeThinV);
 
@@ -30,11 +31,11 @@ Eigen::MatrixXd compute_new_embedding(MatrixXd& G, int d) {
 	MatrixXd eigenvalues = es.singularValues().real();
 
 	for (int i = 0; i < d; i++) {
-		Q.col(i) = eigenvectors.row(i).transpose();
-		lambda *= eigenvalues(i);
+		Q.col(i) = std::sqrt(eigenvalues(i)) * eigenvectors.row(i).transpose();
+		Lambda(i,i) = std::sqrt(eigenvalues(i));
 	}
 
-	Z = std::sqrt(lambda) * Q;
+	Z = Q;
 
 	return Z;
   }
