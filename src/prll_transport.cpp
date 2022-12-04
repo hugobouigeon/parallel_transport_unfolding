@@ -73,8 +73,8 @@ void compute_unfolding(const MatrixXd &V, std::pair<std::vector<int >, std::vect
 			ei = get_Rij(next_pred, pred) * ei;
 			pred = next_pred;
 		}
-		projected_points.row(i) = projected_points.row(predecessors[i]) + ei.transpose();
-		Dist(src, i) = projected_points.row(i).norm();
+		projected_points.row(v) = projected_points.row(predecessors[i]) + ei.transpose();
+		Dist(src, v) = projected_points.row(v).norm();
 	}
 }
 
