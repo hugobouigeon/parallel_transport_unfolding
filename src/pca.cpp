@@ -51,10 +51,17 @@ void k_nearest_neighbour(const MatrixXd& V, Eigen::MatrixXi& I, int k) {
 Eigen::MatrixXd compute_tangent_space(const MatrixXd &V, Eigen::MatrixXi &I, int k, int d, int i) {
 	// computes an orthonormal basis for the local tangent space defined by the k closest neighbors of each point
 	int D = V.cols(); // initial number of dimensions
-	MatrixXd N = MatrixXd::Zero(D, k-1);
+	MatrixXd N = MatrixXd::Zero(D, k);
 	// j starts at 1 to omit closest neighbor, which is the point itself
-	for (int j = 1; j < k; j++) {
-		N.col(j-1) = (V.row(I(i,j)) - V.row(i));
+	bool seen_self = false;
+	for (int j = 0; j < k; j++) {
+		if (I(i, j) == i) {
+			seen_self = true;
+		}
+		else {
+			int neighbor_idx = seen_self ? j-1 : j;
+			N.col(neighbor_idx) = (V.row(I(i,j)) - V.row(i));
+		}
 	}
 	// std::cout << "Test le" << std::endl;
 	JacobiSVD<MatrixXd> es(N, ComputeThinU | ComputeThinV);
