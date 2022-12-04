@@ -6,7 +6,7 @@ typedef std::pair<double, int > path; // contains path length and vertex
 std::vector<Eigen::MatrixXd > Tangent_spaces;
 std::map<std::pair<int, int>, Eigen::MatrixXd > Rij_values;
 
-std::pair<std::vector<int >, std::vector<int > > dijkstra(const MatrixXd &V, MatrixXi &I, int src, int k) {
+std::pair<std::vector<int >, std::vector<int > > dijkstra(const MatrixXd &V, MatrixXi &I, int src, int k, MatrixXd &Dist) {
 	int n = V.rows();
 
 	// contains current shortest path length and predecessor in spanning tree
@@ -40,6 +40,7 @@ std::pair<std::vector<int >, std::vector<int > > dijkstra(const MatrixXd &V, Mat
 		int v = p.second;
 		if (distances_to_src[v] >= 0) continue; // vertex already processed
 		distances_to_src[v] = p.first;
+		Dist(src, v) = p.first;
 		order.push_back(v);
 
 		// adding new outgoing edges to priority queue
@@ -118,7 +119,7 @@ Eigen::MatrixXd compute_distance_matrix(const MatrixXd &V, int k, int d){
 		Tangent_spaces[i] = compute_tangent_space(V, I, k, d, i);
 	}
 	std::cout << "Computing the distance matrix:" << std::endl;
-	for (int i = 0; i<1; i++) {
+	for (int i = 0; i<n; i++) {
 		int barWidth = 70;
 		float progress = static_cast<float>(i)/static_cast<float>(V.rows());
 		std::cout << "[";
@@ -131,8 +132,8 @@ Eigen::MatrixXd compute_distance_matrix(const MatrixXd &V, int k, int d){
 		std::cout << "] " << int(progress * 100.0) << " %\r";
 		std::cout.flush();
 
-		auto geo_path = dijkstra(V, I, i, k);
-		compute_unfolding(V, geo_path, Dist, i, d);
+		auto geo_path = dijkstra(V, I, i, k, Dist);
+		// compute_unfolding(V, geo_path, Dist, i, d);
 	}
 	std::cout.flush();
 	std::cout << "Computing the distance matrix: Done                                           " << std::endl;
