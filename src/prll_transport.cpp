@@ -66,14 +66,14 @@ void compute_unfolding(const MatrixXd &V, std::pair<std::vector<int >, std::vect
 	// TODO length rescaling ?
 	for (int i = 0; i < n-1; i++) {
 		int v = order[i];
-		int pred = predecessors[i];
+		int pred = predecessors[v];
 		VectorXd ei = Tangent_spaces[pred].transpose() * (V.row(v) - V.row(pred)).transpose();
 		while (pred != src) {
 			int next_pred = predecessors[pred];
 			ei = get_Rij(next_pred, pred) * ei;
 			pred = next_pred;
 		}
-		projected_points.row(v) = projected_points.row(predecessors[i]) + ei.transpose();
+		projected_points.row(v) = projected_points.row(predecessors[v]) + ei.transpose();
 		double path_len = projected_points.row(v).norm();
 		Dist(src, v) = path_len * path_len;
 	}

@@ -6,6 +6,8 @@
 #include <igl/writeOBJ.h>
 #include <iostream>
 #include <ostream>
+#include <igl/jet.h>
+
 #include "mds.h"
 #include "prll_transport.h"
 // #include "ICP.h"
@@ -49,7 +51,7 @@ void set_meshes(igl::opengl::glfw::Viewer &viewer) {
   viewer.data().set_mesh(V, F1);
   // viewer.append_mesh();
   // viewer.data().set_mesh(V2, F2);
-  viewer.data(0).set_colors(Eigen::RowVector3d(0.3, 0.8, 0.3));
+  // viewer.data(0).set_colors(Eigen::RowVector3d(0.3, 0.8, 0.3));
   // viewer.data(1).set_colors(Eigen::RowVector3d(0.8, 0.3, 0.3));
 }
 
@@ -115,9 +117,19 @@ int main(int argc, char *argv[])
   std::string input = argc < 2 ? "../data/petit_swiss_roll.off" : argv[1];
   igl::readOFF(input, V, F1);
   igl::opengl::glfw::Viewer viewer;
-  set_pc(viewer);
+  // set_pc(viewer);
+  
 
   Eigen::MatrixXd Dist = compute_distance_matrix(V, 12, 2);
+
+  MatrixXd C;
+	// Assign per-vertex colors
+  MatrixXd colors = Dist.row(0).transpose();
+	igl::jet(colors,true,C);
+  viewer.callback_key_down = &key_down; // for dealing with keyboard events
+  viewer.data().add_points(V,C);
+	// viewer.data().set_colors(C);
+
   MatrixXd G = compute_gramm_matrix(Dist);
 
   MatrixXd Z = compute_new_embedding(G, 2);
