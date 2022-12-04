@@ -65,11 +65,11 @@ void compute_unfolding(const MatrixXd &V, std::pair<std::vector<int >, std::vect
 	MatrixXd projected_points = MatrixXd::Zero(n, d);
 	std::vector<int > order = geo_path.first;
 	std::vector<int > predecessors = geo_path.second;
-	// TODO length rescaling ?
 	for (int i = 0; i < n-1; i++) {
 		int v = order[i];
 		int pred = predecessors[v];
 		VectorXd ei = Tangent_spaces[pred].transpose() * (V.row(v) - V.row(pred)).transpose();
+		ei = ei * (V.row(v) - V.row(pred)).norm() / ei.norm();
 		while (pred != src) {
 			int next_pred = predecessors[pred];
 			ei = get_Rij(next_pred, pred) * ei;
@@ -118,7 +118,7 @@ Eigen::MatrixXd compute_distance_matrix(const MatrixXd &V, int k, int d){
 		Tangent_spaces[i] = compute_tangent_space(V, I, k, d, i);
 	}
 	std::cout << "Computing the distance matrix:" << std::endl;
-	for (int i = 0; i<n; i++) {
+	for (int i = 0; i<1; i++) {
 		int barWidth = 70;
 		float progress = static_cast<float>(i)/static_cast<float>(V.rows());
 		std::cout << "[";
