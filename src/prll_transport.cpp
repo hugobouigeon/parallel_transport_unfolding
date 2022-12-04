@@ -4,6 +4,9 @@
 // typedef std::pair<double, std::vector<int > > path;
 typedef std::pair<double, int > path; // contains path length and vertex
 
+std::vector<Eigen::MatrixXd > Tangent_spaces;
+
+// TODO might want to split this function
 void dijkstra(const MatrixXd &V, const Eigen::MatrixXi &I, Eigen::MatrixXd &Dist, int src, int k) {
 	int n = V.rows();
 
@@ -46,7 +49,9 @@ void dijkstra(const MatrixXd &V, const Eigen::MatrixXi &I, Eigen::MatrixXd &Dist
 	}
 
 	// TODO compute actual geodesic distances with unfolding
-	// need to take as input array of Ti matrices to avoid computing them n times
+	for (int i = 0; i < n; i++) {
+		MatrixXd geodesic_path;
+	}
 }
 
 Eigen::MatrixXd compute_Rij(const MatrixXd& Ti, const Eigen::MatrixXd& Tj) {
@@ -66,12 +71,17 @@ Eigen::MatrixXd compute_Rij(const MatrixXd& Ti, const Eigen::MatrixXd& Tj) {
  * Computes the distance matrix D between points of the point cloud
  * Uses the Dijktra algorithm to find a path and then unfolding to estimate the geodesic
 */
-Eigen::MatrixXd compute_distance_matrix(const MatrixXd &V, const int k){
+Eigen::MatrixXd compute_distance_matrix(const MatrixXd &V, const int k, const int d){
 	int n = V.rows();
+	Tangent_spaces.resize(n);
+	MatrixXd Dist(n, n);
 
 	Eigen::MatrixXi I;
 	k_nearest_neighbour(V,I,k);
-	MatrixXd Dist(n, n);
+
+	for (int i = 0; i < n; i++) {
+		Tangent_spaces[i] = compute_tangent_space(V, I, k, d, i);
+	}
 	for (int i = 0; i<n; i++) {
 		dijkstra(V, I, Dist, i, k);
 	}

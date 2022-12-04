@@ -7,4 +7,4 @@ using namespace Eigen;
 #include "pca.h"
 
 Eigen::MatrixXd compute_Rij(const MatrixXd& Ti, const Eigen::MatrixXd& Tj);
-Eigen::MatrixXd compute_D(const MatrixXd& V, const int k);
+Eigen::MatrixXd compute_distance_matrix(const MatrixXd& V, const int k, const int d);
