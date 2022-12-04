@@ -128,18 +128,12 @@ int main(int argc, char *argv[])
 	igl::jet(colors,true,C);
   viewer.callback_key_down = &key_down; // for dealing with keyboard events
   viewer.data().add_points(V,C);
-	// viewer.data().set_colors(C);
 
-  MatrixXd G = compute_gramm_matrix(Dist);
+  // MatrixXd G = compute_gramm_matrix(Dist);
 
-  MatrixXd Z = compute_new_embedding(G, 2);
-  std::cout << "Z" << std::endl;
-  std::cout << Z << std::endl;
+  // MatrixXd Z = compute_new_embedding(G, 2);
+  // std::cout << "Z" << std::endl;
+  // std::cout << Z << std::endl;
 
-  //Eigen::MatrixXd normals(V.rows(), 3);
-  // Eigen::MatrixXd A(V.rows(), 3);
-  // Eigen::MatrixXd B(V.rows(), 3);
-  // compute_normals(V,I, 12, normals);
-  // draw_normals(viewer, V, normals);
   viewer.launch();
 }

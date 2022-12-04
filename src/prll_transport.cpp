@@ -27,6 +27,7 @@ std::pair<std::vector<int >, std::vector<int > > dijkstra(const MatrixXd &V, Mat
 	std::vector<int > order; // order in which to process vertices for unfolding
 	for (int i = 0; i < k; i++) {
 		int v = I(src, i);
+		if (v == src) continue;
 		double dist_to_vertex = (V.row(src) - V.row(v)).norm();
 		predecessor[v] = src;
 		current_distance[v] = dist_to_vertex;
@@ -44,6 +45,7 @@ std::pair<std::vector<int >, std::vector<int > > dijkstra(const MatrixXd &V, Mat
 		// adding new outgoing edges to priority queue
 		for (int i = 0; i < k; i++) {
 			int new_v = I(v, i);
+			if (v == new_v) continue;
 			if (distances_to_src[new_v] < 0) {
 				double path_length = p.first + (V.row(v) - V.row(new_v)).norm();
 				if (current_distance[new_v] < 0 || current_distance[new_v] > path_length) {
