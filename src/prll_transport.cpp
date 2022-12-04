@@ -74,7 +74,8 @@ void compute_unfolding(const MatrixXd &V, std::pair<std::vector<int >, std::vect
 			pred = next_pred;
 		}
 		projected_points.row(v) = projected_points.row(predecessors[i]) + ei.transpose();
-		Dist(src, v) = projected_points.row(v).norm();
+		double path_len = projected_points.row(v).norm();
+		Dist(src, v) = path_len * path_len;
 	}
 }
 
@@ -114,11 +115,25 @@ Eigen::MatrixXd compute_distance_matrix(const MatrixXd &V, int k, int d){
 	for (int i = 0; i < n; i++) {
 		Tangent_spaces[i] = compute_tangent_space(V, I, k, d, i);
 	}
+	std::cout << "Computing the distance matrix:" << std::endl;
 	for (int i = 0; i<n; i++) {
-		std::cout << "i = " << i << "/ " << V.rows() << std::endl;
+		int barWidth = 70;
+		float progress = static_cast<float>(i)/static_cast<float>(V.rows());
+		std::cout << "[";
+		int pos = barWidth * progress;
+		for (int i = 0; i < barWidth; ++i) {
+			if (i < pos) std::cout << "=";
+			else if (i == pos) std::cout << ">";
+			else std::cout << " ";
+		}
+		std::cout << "] " << int(progress * 100.0) << " %\r";
+		std::cout.flush();
+
 		auto geo_path = dijkstra(V, I, i, k);
 		compute_unfolding(V, geo_path, Dist, i, d);
 	}
+	std::cout.flush();
+	std::cout << "Computing the distance matrix: Done                                           " << std::endl;
 	// Post-processing to correct potential asymmetries
 	Dist = (Dist + Dist.transpose()) / 2;
 	return Dist;
