@@ -1,28 +1,28 @@
 #include "pca.h"
 
 
-void k_nearest_neighbour(const MatrixXd& V1, Eigen::MatrixXi& I, int k) {
+void k_nearest_neighbour(const MatrixXd& V, Eigen::MatrixXi& I, int k) {
 	// return the k nearest neighbour index
 	// complete here
-	int n = V1.rows();
+	int n = V.rows();
 	std::vector<std::vector<int > > O_PI;
 	Eigen::MatrixXi O_CH;
 	Eigen::MatrixXd O_CN;
 	Eigen::VectorXd O_W;
-	igl::octree(V1, O_PI, O_CH, O_CN, O_W);
+	igl::octree(V, O_PI, O_CH, O_CN, O_W);
 	Eigen::VectorXd A;
 	{
-		igl::knn(V1, k, O_PI, O_CH, O_CN, O_W, I);
+		igl::knn(V, k, O_PI, O_CH, O_CN, O_W, I);
 		// CGAL is only used to help get point areas
-		//igl::copyleft::cgal::point_areas(V1, I, N, A);
+		//igl::copyleft::cgal::point_areas(V, I, N, A);
 	}
 }
 
-// void compute_normals(const MatrixXd &V1,const Eigen::MatrixXi &I, int k, MatrixXd &normals){
+// void compute_normals(const MatrixXd &V,const Eigen::MatrixXi &I, int k, MatrixXd &normals){
 //     // compute the normals using PCA
-// 	MatrixXd out(V1.rows(), 3);
+// 	MatrixXd out(V.rows(), 3);
 
-//     int n = V1.rows();
+//     int n = V.rows();
 	
 // 	for (int i = 0; i < n; i++) {
 
@@ -31,9 +31,9 @@ void k_nearest_neighbour(const MatrixXd& V1, Eigen::MatrixXi& I, int k) {
 // 		C(1, 0) = 0;	C(1, 1) = 0;	C(1, 2) = 0;
 // 		C(2, 0) = 0;	C(2, 1) = 0;	C(2, 2) = 0;
 
-// 		Vector3d P = V1.row(i);
+// 		Vector3d P = V.row(i);
 // 		for (int j = 0; j < k; j++) {
-// 			Vector3d pj = V1.row(I(i,j));
+// 			Vector3d pj = V.row(I(i,j));
 // 			if (pj != P) {
 // 				C += (pj - P) * (pj - P).transpose();
 // 			}
@@ -48,13 +48,13 @@ void k_nearest_neighbour(const MatrixXd& V1, Eigen::MatrixXi& I, int k) {
 // 	normals = out;
 // }
 
-Eigen::MatrixXd compute_tangent_space(const MatrixXd &V1, const Eigen::MatrixXi &I, int k, int d, int i) {
+Eigen::MatrixXd compute_tangent_space(const MatrixXd &V, Eigen::MatrixXi &I, int k, int d, int i) {
 	// computes an orthonormal basis for the local tangent space defined by the k closest neighbors of each point
-	int D = V1.cols(); // initial number of dimensions
+	int D = V.cols(); // initial number of dimensions
 	MatrixXd N = MatrixXd::Zero(D, k-1);
 	// j starts at 1 to omit closest neighbor, which is the point itself
 	for (int j = 1; j < k; j++) {
-		N.col(j-1) = (V1.row(I(i,j)) - V1.row(i)).transpose();
+		N.col(j-1) = (V.row(I(i,j)) - V.row(i)).transpose();
 	}
 	SelfAdjointEigenSolver<Matrix3d> es(N);
 	MatrixXd eigenvectors = es.eigenvectors().real();

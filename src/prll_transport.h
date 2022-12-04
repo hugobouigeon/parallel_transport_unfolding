@@ -6,5 +6,5 @@ using namespace Eigen;
 #include <igl/knn.h>
 #include "pca.h"
 
-Eigen::MatrixXd compute_Rij(const MatrixXd& Ti, const Eigen::MatrixXd& Tj);
-Eigen::MatrixXd compute_distance_matrix(const MatrixXd& V, const int k, const int d);
+Eigen::MatrixXd compute_Rij(MatrixXd& Ti, Eigen::MatrixXd& Tj);
+Eigen::MatrixXd compute_distance_matrix(const MatrixXd& V, int k, int d);

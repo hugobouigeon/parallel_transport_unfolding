@@ -1,7 +1,7 @@
 #include "mds.h"
 
 
-Eigen::MatrixXd compute_gramm_matrix(const MatrixXd& D) {
+Eigen::MatrixXd compute_gramm_matrix(MatrixXd& D) {
 	// return the gramm matrix associated to D here
 	// complete here
 	int n = D.rows();
@@ -12,7 +12,7 @@ Eigen::MatrixXd compute_gramm_matrix(const MatrixXd& D) {
 
 
 
-Eigen::MatrixXd compute_new_embedding(const MatrixXd& G, int d = 2) {
+Eigen::MatrixXd compute_new_embedding(MatrixXd& G, int d = 2) {
 	//compute Z using G's eigenvectors
     int n = G.rows();
 	MatrixXd Z(n,d);

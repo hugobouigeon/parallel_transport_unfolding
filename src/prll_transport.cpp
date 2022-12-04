@@ -7,7 +7,7 @@ typedef std::pair<double, int > path; // contains path length and vertex
 std::vector<Eigen::MatrixXd > Tangent_spaces;
 
 // TODO might want to split this function
-void dijkstra(const MatrixXd &V, const Eigen::MatrixXi &I, Eigen::MatrixXd &Dist, int src, int k) {
+void dijkstra(const MatrixXd &V, Eigen::MatrixXi &I, Eigen::MatrixXd &Dist, int src, int k) {
 	int n = V.rows();
 
 	// contains current shortest path length and predecessor in spanning tree
@@ -21,6 +21,7 @@ void dijkstra(const MatrixXd &V, const Eigen::MatrixXi &I, Eigen::MatrixXd &Dist
 
 	// contains path length and end vertex, use preds array for predecessor
 	std::priority_queue<path, std::vector<path >, std::greater<path > > pq; // TODO check that it works lol
+	std::vector<int > order;
 	for (int i = 0; i < k; i++) {
 		int v = I(src, i);
 		double dist_to_vertex = (V.row(src) - V.row(v)).norm();
@@ -54,7 +55,7 @@ void dijkstra(const MatrixXd &V, const Eigen::MatrixXi &I, Eigen::MatrixXd &Dist
 	}
 }
 
-Eigen::MatrixXd compute_Rij(const MatrixXd& Ti, const Eigen::MatrixXd& Tj) {
+Eigen::MatrixXd compute_Rij(MatrixXd& Ti, Eigen::MatrixXd& Tj) {
 	// compute Rij using SVD
 	// cf. eq (3) p.6 of PTU paper
 	JacobiSVD<MatrixXd> svd(Tj.transpose() * Ti, Eigen::ComputeFullU | Eigen::ComputeFullV);
@@ -71,7 +72,7 @@ Eigen::MatrixXd compute_Rij(const MatrixXd& Ti, const Eigen::MatrixXd& Tj) {
  * Computes the distance matrix D between points of the point cloud
  * Uses the Dijktra algorithm to find a path and then unfolding to estimate the geodesic
 */
-Eigen::MatrixXd compute_distance_matrix(const MatrixXd &V, const int k, const int d){
+Eigen::MatrixXd compute_distance_matrix(const MatrixXd &V, int k, int d){
 	int n = V.rows();
 	Tangent_spaces.resize(n);
 	MatrixXd Dist(n, n);
