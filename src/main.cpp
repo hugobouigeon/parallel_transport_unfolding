@@ -99,14 +99,32 @@ void set_pc(igl::opengl::glfw::Viewer &viewer) {
 //   viewer.launch();
 // }
 
+
+
 int main(int argc, char *argv[])
 {
-  std::string input = argc < 2 ? "../data/swiss_roll_noise_0.2.off" : argv[1];
+    /*
+    Eigen::MatrixXd D(4, 4);
+    D(0, 0) = 0; D(0, 1) = 1; D(0, 2) = 3; D(0, 3) = 4;
+    D(1, 0) = 1; D(1, 1) = 0; D(1, 2) = 2; D(1, 3) = 3;
+    D(2, 0) = 3; D(2, 1) = 2; D(2, 2) = 0; D(2, 3) = 1;
+    D(3, 0) = 4; D(3, 1) = 3; D(3, 2) = 1; D(3, 3) = 0;
+    MatrixXd G = compute_gramm_matrix(D);
+    MatrixXd Z = compute_new_embedding(G,2);
+    */
+  std::string input = argc < 2 ? "../data/petit_swiss_roll.off" : argv[1];
   igl::readOFF(input, V, F1);
   igl::opengl::glfw::Viewer viewer;
   set_pc(viewer);
+
   Eigen::MatrixXd Dist = compute_distance_matrix(V, 12, 2);
-  Eigen::MatrixXd normals(V.rows(), 3);
+  MatrixXd G = compute_gramm_matrix(Dist);
+
+  MatrixXd Z = compute_new_embedding(G, 2);
+  std::cout << "Z" << std::endl;
+  std::cout << Z << std::endl;
+
+  //Eigen::MatrixXd normals(V.rows(), 3);
   // Eigen::MatrixXd A(V.rows(), 3);
   // Eigen::MatrixXd B(V.rows(), 3);
   // compute_normals(V,I, 12, normals);
