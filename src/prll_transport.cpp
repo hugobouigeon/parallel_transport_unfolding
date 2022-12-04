@@ -7,25 +7,33 @@ typedef std::pair<double, int > path; // contains path length and vertex
 std::vector<Eigen::MatrixXd > Tangent_spaces;
 
 // TODO might want to split this function
-void dijkstra(const MatrixXd &V, Eigen::MatrixXi &I, Eigen::MatrixXd &Dist, int src, int k) {
+std::pair<std::vector<int >, std::vector<int > > dijkstra(const MatrixXd &V, MatrixXi &I, int src, int k) {
 	int n = V.rows();
 
 	// contains current shortest path length and predecessor in spanning tree
-	path pred[n];
+	// path pred[n];
+	std::vector<int > predecessor(n);
+	std::vector<double > current_distance(n);
 	double distances_to_src[n];
 	for (int i = 0; i < n; i++) {
-		pred[i] = std::make_pair(-1, -1);
+		// pred[i] = std::make_pair(-1, -1);
+		predecessor[i] = -1;
+		current_distance[i] = -1;
 	}
-	pred[src] = std::make_pair(0, src);
+	predecessor[src] = src;
+	current_distance[src] = 0;
+	// pred[src] = std::make_pair(0, src);
 	distances_to_src[src] = 0;
 
 	// contains path length and end vertex, use preds array for predecessor
 	std::priority_queue<path, std::vector<path >, std::greater<path > > pq; // TODO check that it works lol
-	std::vector<int > order;
+	std::vector<int > order; // order in which to process vertices for unfolding
 	for (int i = 0; i < k; i++) {
 		int v = I(src, i);
 		double dist_to_vertex = (V.row(src) - V.row(v)).norm();
-		pred[v] = std::make_pair(dist_to_vertex, src);
+		// pred[v] = std::make_pair(dist_to_vertex, src);
+		predecessor[v] = src;
+		current_distance[v] = dist_to_vertex;
 		pq.push(std::make_pair(dist_to_vertex, v));
 	}
 
@@ -35,23 +43,44 @@ void dijkstra(const MatrixXd &V, Eigen::MatrixXi &I, Eigen::MatrixXd &Dist, int 
 		int v = p.second;
 		if (distances_to_src[v] >= 0) continue; // vertex already processed
 		distances_to_src[v] = p.first;
+		order.push_back(v);
 
 		// adding new outgoing edges to priority queue
 		for (int i = 0; i < k; i++) {
 			int new_v = I(v, i);
 			if (distances_to_src[new_v] < 0) {
 				double path_length = p.first + (V.row(v) - V.row(new_v)).norm();
-				if (pred[new_v].first < 0 || pred[new_v].first > path_length) {
-					pred[new_v] = std::make_pair(path_length, v);
+				// if (pred[new_v].first < 0 || pred[new_v].first > path_length) {
+				if (current_distance[new_v] < 0 || current_distance[new_v] > path_length) {
+					// pred[new_v] = std::make_pair(path_length, v);
+					predecessor[new_v] = v;
+					current_distance[new_v] = path_length;
 					pq.push(std::make_pair(path_length, new_v));
 				}
 			}
 		}
 	}
+	return std::make_pair(order, predecessor); // order could be recomputed but it would be costly
+}
 
-	// TODO compute actual geodesic distances with unfolding
-	for (int i = 0; i < n; i++) {
-		MatrixXd geodesic_path;
+void compute_unfolding(const MatrixXd &V, std::pair<std::vector<int >, std::vector<int > > &geo_path, MatrixXd &Dist, int src, int d) {
+	int n = V.rows();
+	Dist(src, src) = 0;
+	MatrixXd projected_points = MatrixXd::Zero(n, d);
+	std::vector<int > order = geo_path.first;
+	std::vector<int > predecessors = geo_path.second;
+	// TODO length rescaling ?
+	for (int i = 0; i < n-1; i++) {
+		int v = order[i];
+		int pred = predecessors[i];
+		VectorXd ei = Tangent_spaces[pred] * (V.row(v) - V.row(pred));
+		while (pred != src) {
+			int next_pred = predecessors[pred];
+			ei = compute_Rij(Tangent_spaces[next_pred], Tangent_spaces[pred]);
+			pred = next_pred;
+		}
+		projected_points.row(i) = projected_points.row(predecessors[i]) + ei;
+		Dist(src, i) = projected_points.row(i).norm();
 	}
 }
 
@@ -65,8 +94,6 @@ Eigen::MatrixXd compute_Rij(MatrixXd& Ti, Eigen::MatrixXd& Tj) {
 
 	return U * V.transpose();
 }
-
-//TODO dico de Rij?
 
 /**
  * Computes the distance matrix D between points of the point cloud
@@ -84,7 +111,8 @@ Eigen::MatrixXd compute_distance_matrix(const MatrixXd &V, int k, int d){
 		Tangent_spaces[i] = compute_tangent_space(V, I, k, d, i);
 	}
 	for (int i = 0; i<n; i++) {
-		dijkstra(V, I, Dist, i, k);
+		auto geo_path = dijkstra(V, I, i, k);
+		compute_unfolding(V, geo_path, Dist, i, d);
 	}
 	// Post-processing to correct potential asymmetries
 	Dist = (Dist + Dist.transpose()) / 2;
