@@ -57,6 +57,15 @@ std::pair<std::vector<int >, std::vector<int > > dijkstra(const MatrixXd &V, Mat
 			}
 		}
 	}
+
+	For points that are not connected to the source
+	In lack of geodesic path, we simply use eudclidean distance
+	for (int i = 0; i < n; i++) {
+		if (predecessor[i] < 0) {
+			double euclid_dist = (V.row(src) - V.row(i)).norm();
+			Dist(src, i) = euclid_dist * euclid_dist;
+		}
+	}
 	return std::make_pair(order, predecessor); // order could be recomputed but it would be costly
 }
 
@@ -66,7 +75,7 @@ void compute_unfolding(const MatrixXd &V, std::pair<std::vector<int >, std::vect
 	MatrixXd projected_points = MatrixXd::Zero(n, d);
 	std::vector<int > order = geo_path.first;
 	std::vector<int > predecessors = geo_path.second;
-	for (int i = 0; i < n-1; i++) {
+	for (int i = 0; i < order.size(); i++) {
 		int v = order[i];
 		int pred = predecessors[v];
 		VectorXd ei = Tangent_spaces[pred].transpose() * (V.row(v) - V.row(pred)).transpose();
