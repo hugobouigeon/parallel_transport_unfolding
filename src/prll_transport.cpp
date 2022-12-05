@@ -71,6 +71,8 @@ std::pair<std::vector<int >, std::vector<int > > dijkstra(const MatrixXd &V, Mat
 
 void compute_unfolding(const MatrixXd &V, std::pair<std::vector<int >, std::vector<int > > &geo_path, MatrixXd &Dist, int src, int d) {
 	int n = V.rows();
+	std::vector<Eigen::MatrixXd > Rij_product_values(n); // stores the product of the Rij matrices along the paths
+	Rij_product_values[src] = MatrixXd::Identity(d, d);
 	Dist(src, src) = 0;
 	MatrixXd projected_points = MatrixXd::Zero(n, d);
 	std::vector<int > order = geo_path.first;
@@ -80,11 +82,14 @@ void compute_unfolding(const MatrixXd &V, std::pair<std::vector<int >, std::vect
 		int pred = predecessors[v];
 		VectorXd ei = Tangent_spaces[pred].transpose() * (V.row(v) - V.row(pred)).transpose();
 		ei = ei * (V.row(v) - V.row(pred)).norm() / ei.norm();
-		while (pred != src) {
+
+		if (pred != src) {
 			int next_pred = predecessors[pred];
-			ei = get_Rij(next_pred, pred) * ei;
-			pred = next_pred;
+			MatrixXd Rij_prod = Rij_product_values[next_pred] * get_Rij(next_pred, pred);
+			Rij_product_values[pred] = Rij_prod;
+			ei = Rij_prod * ei;
 		}
+
 		projected_points.row(v) = projected_points.row(predecessors[v]) + ei.transpose();
 		double path_len = projected_points.row(v).norm();
 		Dist(src, v) = path_len * path_len;

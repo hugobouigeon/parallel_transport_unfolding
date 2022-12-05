@@ -138,7 +138,7 @@ int main(int argc, char *argv[])
   std::cout << "Computing the new embedding...";
   std::cout.flush();
   MatrixXd Z = compute_new_embedding(G, 2);
-  std::cout << "Computing the new embedding... Done !" << std::endl;
+  std::cout << " Done !" << std::endl;
 
   std::ofstream myfile;
   myfile.open("../data/results.txt");
