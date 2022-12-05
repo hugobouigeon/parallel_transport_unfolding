@@ -7,6 +7,7 @@
 #include <iostream>
 #include <ostream>
 #include <igl/jet.h>
+#include <fstream>
 
 #include "mds.h"
 #include "prll_transport.h"
@@ -137,6 +138,13 @@ int main(int argc, char *argv[])
   MatrixXd Z = compute_new_embedding(G, 2);
   std::cout << " Done !" << std::endl;
   std::cout << Z << std::endl;
+  std::ofstream myfile;
+  myfile.open("C:/Users/hugob/Desktop/Projet INF574/parallel_transport_unfolding/src/data/results.txt");
+  for (int i = 0; i < Z.rows(); i++) {
+      myfile << Z.row(i);
+      myfile << "\n";
+  }
+  myfile.close();
 
   viewer.launch();
 }
