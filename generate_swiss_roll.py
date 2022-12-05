@@ -50,8 +50,8 @@ while len(L) < n:
     beta = np.random.random() * 2 * np.pi
     pt = [np.cos(alpha)*np.cos(beta), np.sin(alpha)*np.cos(beta), np.sin(beta)]
     indicator = 2*abs(alpha%(np.pi/2)-np.pi/4) + 5*abs(0.5*np.sin(beta))**4
-    if pt[2] < 0.65 and indicator < 0.9:
-        r = 1 + 0.2*(0.5-np.random.random())
+    if pt[2] < 0.65 and indicator < 0.9 or pt[2] < 0.-0.95:
+        r = 1 + 0.0*(0.5-np.random.random())
         pt[0] *= r
         pt[1] *= r
         pt[2] *= r
@@ -61,11 +61,22 @@ while len(L) < n:
 sr_points = np.array(L)
 sr_color = np.array(C)
 
+## plane
+n=1000
+L=[]
+C=[]
+
+for i in range(30):
+    for j in range (30):
+        L.append([i*0.1,j*0.1,(i*0.1)**2 - (j*0.1)**2 ])
+        C.append(i / 3 + 4)
+sr_points = np.array(L)
+sr_color = np.array(C)
 
 
 ##decode
 
-PATH2 = "C:/Users/hugob/Desktop/res.txt"
+PATH2 = "C:/Users/hugob/Desktop/Projet INF574/parallel_transport_unfolding/src/data/results.txt"
 f = open(PATH2,'r')
 L = []
 for x in f.readlines():
@@ -75,24 +86,56 @@ print(len(L))
 L = np.array(L)
 X = L[:,0]
 Y = L[:,1]
-plt.plot(X,L,'bo')
+plt.plot(X,Y,'bo')
 plt.show()
+f.close()
 
 
 
+## generate world map cloud
+
+import cv2
+image = cv2.imread("C:/Users/hugob/Desktop/nicemap.png")
+image = image[:,:]
+width = len(image[0])
+height = len(image)
+stride = 8
+#print(len([x for x in image[100] if (x[0]>200 and x[1] > 200 and x[2]>200)]))
+#plt.matshow(image[:,:,2])
+#plt.show()
+
+L=[]
+C=[]
+for w in range(height//stride):
+    for h in range(width//stride-1):
+        x = image[w*stride][h*stride]
+        y = image[w*stride+1][h*stride+10]
+        if ((x[2]>220 or y[2]>220)): #and (h*stride<700 or (w*stride < 250 or w*stride > 300 ))):# or h == 30 or (w == 25 and h>30)):
+            alpha = h / width * stride * 2 * np.pi
+            beta = np.pi/2 - w / height * stride * np.pi
+            pt = [np.cos(alpha)*np.cos(beta), np.sin(alpha)*np.cos(beta), np.sin(beta)]
+            #pt = [w,h,0]
+            r = 0.03*(0.5-np.random.random())
+            pt[0] += r
+            pt[1] += r
+            pt[2] += r
+            L.append(pt)
+            C.append(pt[2] * 10 + 4)
+
+sr_points = np.array(L)
+sr_color = np.array(C)
 
 
-
-
-
-
-
-
-
-
-
-
-
+fig = plt.figure(figsize=(8, 6))
+ax = fig.add_subplot(111, projection="3d")
+fig.add_axes(ax)
+ax.scatter(
+    sr_points[:, 0], sr_points[:, 1], sr_points[:, 2], c=sr_color, s=50, alpha=0.8
+)
+ax.set_title("the earth")
+ax.view_init(azim=-66, elev=12)
+_ = ax.text2D(0.8, 0.05, s=f"n_samples={len(L)}", transform=ax.transAxes)
+plt.show()
 
 
 
