@@ -58,8 +58,8 @@ std::pair<std::vector<int >, std::vector<int > > dijkstra(const MatrixXd &V, Mat
 		}
 	}
 
-	For points that are not connected to the source
-	In lack of geodesic path, we simply use eudclidean distance
+	// For points that are not connected to the source
+	// In lack of geodesic path, we simply use eudclidean distance
 	for (int i = 0; i < n; i++) {
 		if (predecessor[i] < 0) {
 			double euclid_dist = (V.row(src) - V.row(i)).norm();
