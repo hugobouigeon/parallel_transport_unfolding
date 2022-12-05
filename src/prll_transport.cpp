@@ -101,14 +101,14 @@ Eigen::MatrixXd compute_Rij(MatrixXd& Ti, Eigen::MatrixXd& Tj) {
 
 	MatrixXd U = svd.matrixU();
 	MatrixXd V = svd.matrixV();
-	return U * V.transpose();
+	return V * U.transpose();
 }
 
 /**
  * Computes the distance matrix D between points of the point cloud
  * Uses the Dijktra algorithm to find a path and then unfolding to estimate the geodesic
 */
-Eigen::MatrixXd compute_distance_matrix(const MatrixXd &V, int k, int d){
+Eigen::MatrixXd compute_distance_matrix(const MatrixXd &V, int k, int d, bool usePTU){
 	int n = V.rows();
 	Tangent_spaces.resize(n);
 	MatrixXd Dist(n, n);
@@ -133,7 +133,9 @@ Eigen::MatrixXd compute_distance_matrix(const MatrixXd &V, int k, int d){
 		std::cout.flush();
 
 		auto geo_path = dijkstra(V, I, i, k, Dist);
-		// compute_unfolding(V, geo_path, Dist, i, d);
+		if (usePTU) {
+			compute_unfolding(V, geo_path, Dist, i, d);
+		}
 	}
 	std::cout << std::endl;
 	// Post-processing to correct potential asymmetries

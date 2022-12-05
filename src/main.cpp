@@ -116,12 +116,13 @@ int main(int argc, char *argv[])
     MatrixXd Z = compute_new_embedding(G,2);
     */
   std::string input = argc < 2 ? "../data/petit_swiss_roll.off" : argv[1];
+  bool usePTU = argc < 3;
   igl::readOFF(input, V, F1);
   igl::opengl::glfw::Viewer viewer;
   // set_pc(viewer);
   
 
-  Eigen::MatrixXd Dist = compute_distance_matrix(V, 12, 2);
+  Eigen::MatrixXd Dist = compute_distance_matrix(V, 12, 2, usePTU);
 
   MatrixXd C;
 	// Assign per-vertex colors
