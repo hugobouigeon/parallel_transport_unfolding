@@ -36,8 +36,8 @@ Eigen::MatrixXd compute_new_embedding(MatrixXd& G, int d) {
 	// MatrixXd eigenvalues = ev.real();
 
 	for (int i = 0; i < d; i++) {
-		std::cout << eigenvalues(d-1-i) << std::endl;
-		Q.col(i) = std::sqrt(abs(eigenvalues(d-1-i))) * eigenvectors.row(d-1-i).transpose();
+		std::cout << eigenvalues(n-1-i) << std::endl;
+		Q.col(i) = std::sqrt(abs(eigenvalues(n-1-i))) * eigenvectors.row(n-1-i).transpose();
 	}
 
 	Z = Q;
