@@ -129,14 +129,14 @@ int main(int argc, char *argv[])
   viewer.callback_key_down = &key_down; // for dealing with keyboard events
   viewer.data().add_points(V,C);
 
-  // std::cout << "Computing the Gramm matrix...";
-  // MatrixXd G = compute_gramm_matrix(Dist);
-  // std::cout << " Done !" << std::endl;
+  std::cout << "Computing the Gramm matrix...";
+  MatrixXd G = compute_gramm_matrix(Dist);
+  std::cout << " Done !" << std::endl;
 
-  // std::cout << "Computing the new embedding...";
-  // MatrixXd Z = compute_new_embedding(G, 2);
-  // std::cout << " Done !" << std::endl;
-  // std::cout << Z << std::endl;
+  std::cout << "Computing the new embedding...";
+  MatrixXd Z = compute_new_embedding(G, 2);
+  std::cout << " Done !" << std::endl;
+  std::cout << Z << std::endl;
 
   viewer.launch();
 }

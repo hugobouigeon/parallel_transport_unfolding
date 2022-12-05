@@ -119,7 +119,7 @@ Eigen::MatrixXd compute_distance_matrix(const MatrixXd &V, int k, int d){
 		Tangent_spaces[i] = compute_tangent_space(V, I, k, d, i);
 	}
 	std::cout << "Computing the distance matrix..." << std::endl;
-	for (int i = 0; i<1; i++) {
+	for (int i = 0; i<n; i++) {
 		int barWidth = 70;
 		float progress = static_cast<float>(i)/static_cast<float>(V.rows());
 		std::cout << "[";

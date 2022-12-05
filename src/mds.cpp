@@ -21,7 +21,6 @@ Eigen::MatrixXd compute_new_embedding(MatrixXd& G, int d) {
 
 	MatrixXd Z(n, d);
 	MatrixXd Q(n, d);
-	MatrixXd Lambda = MatrixXd::Zero(n,n);
 
 	// float lambda = 1;
 
@@ -30,16 +29,15 @@ Eigen::MatrixXd compute_new_embedding(MatrixXd& G, int d) {
 	MatrixXd eigenvectors = es.eigenvectors().real();
 
 	// MatrixXd eigenvectors = es.matrixV().real();
-	MatrixXcd ev = es.eigenvalues();
-	for (int i = 0; i < d; i++) {
-		std::cout << ev(i) << std::endl;
-	}
-	MatrixXd eigenvalues = ev.real();
+	MatrixXcd eigenvalues = es.eigenvalues().real();
+	// for (int i = 0; i < n; i++) {
+	// 	std::cout << ev(i) << std::endl;
+	// }
+	// MatrixXd eigenvalues = ev.real();
 
 	for (int i = 0; i < d; i++) {
-		std::cout << eigenvalues(i) << std::endl;
-		Q.col(i) = std::sqrt(abs(eigenvalues(i))) * eigenvectors.row(i).transpose();
-		Lambda(i,i) = std::sqrt(abs(eigenvalues(i)));
+		std::cout << eigenvalues(d-1-i) << std::endl;
+		Q.col(i) = std::sqrt(abs(eigenvalues(d-1-i))) * eigenvectors.row(d-1-i).transpose();
 	}
 
 	Z = Q;
