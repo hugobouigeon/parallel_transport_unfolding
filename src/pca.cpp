@@ -14,6 +14,24 @@ void k_nearest_neighbour(const MatrixXd& V, Eigen::MatrixXi& I, int k) {
 	}
 }
 
+void epsilonball(const MatrixXd& V, Eigen::MatrixXi& I, float eps) {
+	// return the k nearest neighbour index
+	int n = V.rows();
+	MatrixXi out(n,n);
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			if ((V.row(i) - V.row(j)).norm() < eps){
+				out(i, j) = j;
+			}
+			else {
+				out(i, j) = -1;
+			}
+		}
+	}
+	I = out;
+}
+
+
 Eigen::MatrixXd compute_tangent_space(const MatrixXd &V, Eigen::MatrixXi &I, int k, int d, int i) {
 	// computes an orthonormal basis for the local tangent space defined by the k closest neighbors of each point
 	int D = V.cols(); // initial number of dimensions

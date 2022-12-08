@@ -6,4 +6,5 @@ using namespace Eigen;
 #include <igl/knn.h>
 
 void k_nearest_neighbour(const MatrixXd &V, Eigen::MatrixXi &I, int k);
+void epsilonball(const MatrixXd& V, Eigen::MatrixXi& I, float eps);
 Eigen::MatrixXd compute_tangent_space(const MatrixXd &V, Eigen::MatrixXi &I, int k, int d, int i);

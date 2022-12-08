@@ -26,9 +26,12 @@ std::pair<std::vector<int >, std::vector<int > > dijkstra(const MatrixXd &V, Mat
 	std::priority_queue<path, std::vector<path >, std::greater<path > > pq; // TODO check that it works lol
 	std::vector<int > order; // order in which to process vertices for unfolding
 	for (int i = 0; i < k; i++) {
+
 		int v = I(src, i);
-		if (v == src) continue;
+		if (v == src || v == -1) continue; // || v == -1 for epsilonball
+				
 		double dist_to_vertex = (V.row(src) - V.row(v)).norm();
+		
 		predecessor[v] = src;
 		current_distance[v] = dist_to_vertex;
 		pq.push(std::make_pair(dist_to_vertex, v));
@@ -46,6 +49,7 @@ std::pair<std::vector<int >, std::vector<int > > dijkstra(const MatrixXd &V, Mat
 		// adding new outgoing edges to priority queue
 		for (int i = 0; i < k; i++) {
 			int new_v = I(v, i);
+			if (new_v == -1) continue;
 			if (v == new_v) continue;
 			if (distances_to_src[new_v] < 0) {
 				double path_length = p.first + (V.row(v) - V.row(new_v)).norm();
@@ -126,6 +130,16 @@ Eigen::MatrixXd compute_distance_matrix(const MatrixXd &V, int k, int d, bool us
 	int n = V.rows();
 	Tangent_spaces.resize(n);
 	MatrixXd Dist(n, n);
+	//----------epsball-------------//
+	bool epsball = true;
+	Eigen::MatrixXi J;
+	float eps = 0.3;
+	if (epsball) {
+		epsilonball(V, J, eps);
+	}
+	
+	
+	//----------epsball-------------//
 
 	Eigen::MatrixXi I;
 	k_nearest_neighbour(V,I,k);
@@ -145,11 +159,20 @@ Eigen::MatrixXd compute_distance_matrix(const MatrixXd &V, int k, int d, bool us
 		}
 		std::cout << "] " << int(progress * 100.0) << " %\r";
 		std::cout.flush();
-
-		auto geo_path = dijkstra(V, I, i, k, Dist);
-		if (usePTU) {
-			compute_unfolding(V, geo_path, Dist, i, d);
+		if (epsball) {
+			auto geo_path = dijkstra(V, J, i, n, Dist);
+			if (usePTU) {
+				compute_unfolding(V, geo_path, Dist, i, d);
+			}
 		}
+		else {
+			auto geo_path = dijkstra(V, I, i, k, Dist);
+			if (usePTU) {
+				compute_unfolding(V, geo_path, Dist, i, d);
+			}
+		}
+		
+		
 	}
 	std::cout << std::endl;
 	// Post-processing to correct potential asymmetries
