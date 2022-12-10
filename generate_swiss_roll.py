@@ -86,12 +86,31 @@ print(len(L))
 L = np.array(L)
 X = L[:,0]
 Y = L[:,1]
-plt.plot(X,Y,'bo')
+plt.plot(X,Y,'o')
+plt.axis('equal')
 plt.show()
 f.close()
 
+## goundtruth flower
 
-
+PATH3 = "C:/Users/hugob/Desktop/flower.txt"
+f = open(PATH3,'r')
+L = []
+for x in f.readlines():
+    l = [float(k) for k in x.split(" ") if k!=""]
+    L.append(l)
+print(len(L))
+n = Len(L)
+L = np.array(L)
+X = L[:,0]
+Y = L[:,1]
+Z = L[:,2]
+X1 = [X[i]*np.arcsin(Z[i]-0.5) for i in range(n)]
+Y1 = [Y[i]*np.arcsin(Z[i]-0.5) for i in range(n)]
+plt.plot(X1,Y1,'o')
+plt.axis('equal')
+plt.show()
+f.close()
 ## generate world map cloud
 
 import cv2
